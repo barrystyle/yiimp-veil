@@ -132,10 +132,6 @@ bool coind_validate_address(YAAMP_COIND *coind)
 	bool isvalid = getaddressinfo || json_get_bool(json_result, "isvalid");
 	if(!isvalid) stratumlog("%s wallet %s is not valid.\n", coind->name, coind->wallet);
 
-	bool ismine = json_get_bool(json_result, "ismine");
-	if(!ismine) stratumlog("%s wallet %s is not mine.\n", coind->name, coind->wallet);
-	else isvalid = ismine;
-
 	const char *p = json_get_string(json_result, "pubkey");
 	strcpy(coind->pubkey, p ? p : "");
 
@@ -160,7 +156,7 @@ bool coind_validate_address(YAAMP_COIND *coind)
 	}
 	json_value_free(json);
 
-	return isvalid && ismine;
+	return isvalid;
 }
 
 void coind_init(YAAMP_COIND *coind)
@@ -181,7 +177,7 @@ void coind_init(YAAMP_COIND *coind)
 
 	sprintf(params, "[\"%s\"]", account);
 
-	json_value *json = rpc_call(&coind->rpc, "getaccountaddress", params);
+	json_value *json = rpc_call(&coind->rpc, "getnewminingaddress", params);
 	if(!json)
 	{
 		json = rpc_call(&coind->rpc, "getaddressesbyaccount", params);
