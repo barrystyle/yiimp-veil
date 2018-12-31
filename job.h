@@ -59,6 +59,12 @@ struct YAAMP_JOB_TEMPLATE
 	bool has_filtered_txs;
 	int filtered_txs_fee;
 
+	char veil_accum10[128];
+	char veil_accum100[128];
+	char veil_accum1000[128];
+	char veil_accum10000[128];
+	char veil_pofn[128];
+
 	int auxs_size;
 	YAAMP_COIND_AUX *auxs[MAX_AUXS];
 };
