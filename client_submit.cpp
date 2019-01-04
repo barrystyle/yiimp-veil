@@ -45,17 +45,36 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		string_be(merklerootbyteswap,merklerootswap);
 
 		sprintf(veildatahash, "%s%s%s%s%s%s%s%s%s%s%s%s",merklerootswap,merklerootswap,"04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn);
-		printf("veildatahash: %s\n", veildatahash);
-	}
+		//printf("veildatahash: %s\n", veildatahash);
 
-	// build blockheader
-	if (!strcmp(g_stratum_algo, "x16rt")) {
-		sprintf(submitvalues->header, "%s%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be, templ->claim_be, ntime, templ->nbits, nonce);
+		char veildatahash_bin[258];
+		memset(veildatahash_bin,0,258);
+		binlify((unsigned char*)veildatahash_bin, veildatahash);
+
+		//for (int i=0; i < 257; i++)
+		//   printf("%02hhx",veildatahash_bin[i]);
+		//printf("\n");
+
+		char veilshahash[65];
+		memset(veilshahash,0,65);
+		YAAMP_HASH_FUNCTION veildata_hash = sha256_double_hash_hex;
+		veildata_hash((char *)veildatahash_bin,veilshahash,257);
+
+		//printf("%s\n",veilshahash);
+		
+		char veilshahashswap[128];
+		memset(veilshahashswap,0,128);
+		string_be(veilshahash,veilshahashswap);
+		printf("%s\n",veilshahashswap);
+
+		char veilsha_be[128];
+		memset(veilsha_be,0,128);
+		ser_string_be(veilshahashswap,veilsha_be,8);
+
+		// build blockheader
+		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, veilsha_be, ntime, templ->nbits, nonce);
 		ser_string_be(submitvalues->header, submitvalues->header_be, 112/4);
-	} else {
-		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, submitvalues->merkleroot_be,
-			ntime, templ->nbits, nonce);
-		ser_string_be(submitvalues->header, submitvalues->header_be, 20);
+		printf("blkheader: %s\n", submitvalues->header_be);
 	}
 
 	binlify(submitvalues->header_bin, submitvalues->header_be);
@@ -66,6 +85,10 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 
 	hexlify(submitvalues->hash_hex, submitvalues->hash_bin, 32);
 	string_be(submitvalues->hash_hex, submitvalues->hash_be);
+
+	printf("powhash1: %s\n",submitvalues->hash_hex);
+	printf("powhash2: %s\n",submitvalues->hash_be);
+	printf("\n");
 }
 
 /////////////////////////////////////////////////////////////////////////////////
