@@ -65,16 +65,16 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		char veilshahashswap[128];
 		memset(veilshahashswap,0,128);
 		string_be(veilshahash,veilshahashswap);
-		printf("%s\n",veilshahashswap);
 
 		char veilsha_be[128];
 		memset(veilsha_be,0,128);
 		ser_string_be(veilshahashswap,veilsha_be,8);
 
+		printf("veilhash: %s\n",veilshahashswap);
+
 		// build blockheader
 		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, veilsha_be, ntime, templ->nbits, nonce);
 		ser_string_be(submitvalues->header, submitvalues->header_be, 112/4);
-		printf("blkheader: %s\n", submitvalues->header_be);
 	}
 
 	binlify(submitvalues->header_bin, submitvalues->header_be);
@@ -86,8 +86,8 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 	hexlify(submitvalues->hash_hex, submitvalues->hash_bin, 32);
 	string_be(submitvalues->hash_hex, submitvalues->hash_be);
 
-	printf("powhash1: %s\n",submitvalues->hash_hex);
-	printf("powhash2: %s\n",submitvalues->hash_be);
+	printf("blkhdr  : %s\n", submitvalues->header_be);
+	printf("powhash : %s\n",submitvalues->hash_be);
 	printf("\n");
 }
 

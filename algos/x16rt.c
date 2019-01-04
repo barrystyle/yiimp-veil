@@ -22,6 +22,8 @@
 
 #include "common.h"
 
+#define TIME_MASK 0xffffff80
+
 enum Algo {
 	BLAKE = 0,
 	BMW,
@@ -42,47 +44,65 @@ enum Algo {
 	HASH_FUNC_COUNT
 };
 
-uint32_t s_ntime = UINT32_MAX;
-#define TIME_MASK 0xffffff80
+static const char* algo_strings[] = {
+        "blake",
+        "bmw512",
+        "groestl",
+        "jh512",
+        "keccak",
+        "skein",
+        "luffa",
+        "cube",
+        "shavite",
+        "simd",
+        "echo",
+        "hamsi",
+        "fugue",
+        "shabal",
+        "whirlpool",
+        "sha512",
+        NULL
+};
 
 static void getAlgoString(const uint32_t* timeHash, char *output)
 {
-	char *sptr = output;
-	uint8_t* data = (uint8_t*)timeHash;
+        char *sptr = output;
+        uint8_t* data = (uint8_t*)timeHash;
 
-	for (uint8_t j = 0; j < HASH_FUNC_COUNT; j++) {
-		uint8_t b = (15 - j) >> 1; // 16 ascii hex chars, reversed
-		uint8_t algoDigit = (j & 1) ? data[b] & 0xF : data[b] >> 4;
+        for (uint8_t j = 0; j < HASH_FUNC_COUNT; j++) {
+                uint8_t b = (15 - j) >> 1; // 16 ascii hex chars, reversed
+                uint8_t algoDigit = (j & 1) ? data[b] & 0xF : data[b] >> 4;
 
-		if (algoDigit >= 10)
-			sprintf(sptr, "%c", 'A' + (algoDigit - 10));
-		else
-			sprintf(sptr, "%u", (uint32_t) algoDigit);
-		sptr++;
-	}
-	*sptr = '\0';
+                if (algoDigit >= 10)
+                        sprintf(sptr, "%c", 'A' + (algoDigit - 10));
+                else
+                        sprintf(sptr, "%u", (uint32_t) algoDigit);
+                sptr++;
+        }
+        *sptr = '\0';
 }
 
-static void doubleSha(unsigned char* input, unsigned char* output, uint32_t len)
+static void doubleSha(unsigned char* output, unsigned char* input, uint32_t len)
 {
-	unsigned char hash[32];
+       unsigned char hash[32];
 
-	SHA256_CTX ctx_sha256;
-        SHA256_Init(&ctx_sha256);
-        SHA256_Update(&ctx_sha256, input, len);
-        SHA256_Final(input, &ctx_sha256);
+       SHA256_CTX ctx_sha256;
+       SHA256_Init(&ctx_sha256);
+       SHA256_Update(&ctx_sha256, input, len);
+       SHA256_Final(input, &ctx_sha256);
 
-	SHA256_Init(&ctx_sha256);
-	SHA256_Update(&ctx_sha256, input, 32);
-	SHA256_Final(hash, &ctx_sha256);
+       SHA256_Init(&ctx_sha256);
+       SHA256_Update(&ctx_sha256, input, 32);
+       SHA256_Final(hash, &ctx_sha256);
 
-	memcpy(output, hash, 32);
+       memcpy(output, hash, 32);
 }
 
 static void getTimeHash(const uint32_t timeStamp, void* timeHash)
 {
-	int32_t maskedTime = timeStamp & TIME_MASK;
-	doubleSha((unsigned char*)timeHash, (const unsigned char*)&(maskedTime), sizeof(maskedTime));
+    int32_t maskedTime = timeStamp & TIME_MASK;
+
+    doubleSha((unsigned char*)timeHash, (const unsigned char*)&(maskedTime), sizeof(maskedTime));
 }
 
 void x16rt_hash(const char* input, char* output, uint32_t len)
