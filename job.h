@@ -14,6 +14,8 @@ struct YAAMP_JOB_VALUES
 	char header_be[1024];
 	unsigned char header_bin[1024];
 
+        char veilblock[1024];
+
 	char hash_hex[1024];
 	char hash_be[1024];
 	unsigned char hash_bin[1024];

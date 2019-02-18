@@ -21,6 +21,8 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 
 	char veildatahash[1024];
 	memset(veildatahash, 0, 1024);
+        char veildatablk[1024];
+        memset(veildatablk, 0, 1024);
 
 	YAAMP_HASH_FUNCTION merkle_hash = sha256_double_hash_hex;
 	if (g_current_algo->merkle_func)
@@ -46,6 +48,11 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 
 		sprintf(veildatahash, "%s%s%s%s%s%s%s%s%s%s%s%s",merklerootswap,merklerootswap,"04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn);
 		printf("veildatahash: %s\n", veildatahash);
+                sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn,merklerootswap,merklerootswap);
+                printf("veildatablk:  %s\n", veildatablk);
+
+                memset(submitvalues->veilblock,'\0',1024);
+                memcpy(submitvalues->veilblock,veildatablk,strlen(veildatablk));
 
 		char veildatahash_bin[258];
 		memset(veildatahash_bin,0,258);
@@ -184,7 +191,7 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 			sprintf(count_hex, "fd%02x%02x", templ->txcount & 0xFF, templ->txcount >> 8);
 
 		memset(block_hex, 0, block_size);
-		sprintf(block_hex, "%s%s%s", submitvalues->header_be, count_hex, submitvalues->coinbase);
+		sprintf(block_hex, "%s%s%s%s", submitvalues->header_be, count_hex, submitvalues->coinbase, submitvalues->veilblock);  // test
 
 		if (g_current_algo->name && !strcmp("jha", g_current_algo->name)) {
 			// block header of 88 bytes

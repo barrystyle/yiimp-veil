@@ -46,8 +46,8 @@ static void job_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, char 
 	else
 		sprintf(data+strlen(data), "1976a914%s88ac", key? key: coind->script_pubkey);
 
-//	debuglog("pack tx %s\n", data+ol);
-//	debuglog("pack tx %lld\n", amount);
+	debuglog("pack tx %s\n", data+ol);
+	debuglog("pack tx %lld\n", amount);
 }
 
 void coinbase_aux(YAAMP_JOB_TEMPLATE *templ, char *aux_script)
