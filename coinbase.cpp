@@ -87,7 +87,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	char commitment[128] = { 0 };
 
 	ser_number(templ->height, eheight);
-	ser_number(time(NULL), etime);
+	ser_number(bswap32(time(NULL)), etime);
 	if(coind->pos) ser_string_be(templ->ntime, entime, 1);
 
 	char eversion1[32] = "01000000000000";
