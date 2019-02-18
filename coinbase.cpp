@@ -90,7 +90,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	ser_number(time(NULL), etime);
 	if(coind->pos) ser_string_be(templ->ntime, entime, 1);
 
-	char eversion1[32] = "01000000";
+	char eversion1[32] = "01000000000000";
 	if(coind->txmessage)
 		strcpy(eversion1, "02000000");
 
@@ -127,7 +127,8 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	//if(coind->txmessage)
 	//	strcat(templ->coinb2, "00");
 
-	strcat(templ->coinb2, "00000000"); // locktime
+        // veil appears to truncate this
+	// strcat(templ->coinb2, "00000000"); 
 
 	coind->reward = (double)available/100000000*coind->reward_mul;
 //	debuglog("coinbase %f\n", coind->reward);
