@@ -87,20 +87,20 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	char commitment[128] = { 0 };
 
 	ser_number(templ->height, eheight);
-	ser_number(bswap32(time(NULL)), etime);
-	if(coind->pos) ser_string_be(templ->ntime, entime, 1);
+	ser_number(bswap32((int)time(NULL)), etime);
+//	if(coind->pos) ser_string_be(templ->ntime, entime, 1);
 
 	char eversion1[32] = "01000000000000";
-	if(coind->txmessage)
-		strcpy(eversion1, "02000000");
+//	if(coind->txmessage)
+//		strcpy(eversion1, "02000000");
 
 	char script1[4*1024];
 	sprintf(script1, "%s%s%s08", eheight, templ->flags, etime);
 
 	char script2[32] = "7969696d7000"; // "yiimp\0" in hex ascii
 
-	if(!coind->pos && !coind->isaux && templ->auxs_size)
-		coinbase_aux(templ, script2);
+//	if(!coind->pos && !coind->isaux && templ->auxs_size)
+//		coinbase_aux(templ, script2);
 
 	int script_len = strlen(script1)/2 + strlen(script2)/2 + 8;
 	sprintf(templ->coinb1, "%s%s01"
@@ -110,22 +110,22 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	sprintf(templ->coinb2, "%s00000000", script2);
 
 	// segwit commitment, if needed
-	if (templ->has_segwit_txs)
-		sprintf(commitment, "0000000000000000%02x%s", (int) (strlen(coind->commitment)/2), coind->commitment);
+//	if (templ->has_segwit_txs)
+//		sprintf(commitment, "0000000000000000%02x%s", (int) (strlen(coind->commitment)/2), coind->commitment);
 
 	json_int_t available = templ->value;
 
-	if (templ->has_segwit_txs) {
-		strcat(templ->coinb2, "02");
-		strcat(templ->coinb2, commitment);
-	} else {
+//	if (templ->has_segwit_txs) {
+//		strcat(templ->coinb2, "02");
+//		strcat(templ->coinb2, commitment);
+//	} else {
 		strcat(templ->coinb2, "01");
-	}
+//	}
 
 	job_pack_tx(coind, templ->coinb2, available, NULL);
 
-	//if(coind->txmessage)
-	//	strcat(templ->coinb2, "00");
+//	if(coind->txmessage)
+//		strcat(templ->coinb2, "00");
 
         // veil appears to truncate this
 	// strcat(templ->coinb2, "00000000"); 
