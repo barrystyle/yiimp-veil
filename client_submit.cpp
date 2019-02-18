@@ -77,6 +77,8 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		ser_string_be(submitvalues->header, submitvalues->header_be, 112/4);
 	}
 
+	// fProofOfStake & fProofOfFullNode
+	strcat(submitvalues->header_be,"0000");
 	binlify(submitvalues->header_bin, submitvalues->header_be);
 
 //	printf("%s\n", submitvalues->header_be);
