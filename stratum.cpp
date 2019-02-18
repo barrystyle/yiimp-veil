@@ -299,6 +299,7 @@ int main(int argc, char **argv)
 	struct rlimit rlim_threads = {0x8000, 0x8000};
 	setrlimit(RLIMIT_NPROC, &rlim_threads);
 
+        printf("");
 	stratumlogdate("starting stratum for %s on %s:%d\n",
 		g_current_algo->name, g_tcp_server, g_tcp_port);
 

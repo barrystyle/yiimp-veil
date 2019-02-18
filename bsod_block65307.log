@@ -1,0 +1,29 @@
+00000020 (nversion)
+1b09140c4d1b4a8a274725f30ec934db40e2d1cc5fd6c08373fa2a49427a88fe (prevhash)
+95edf221d0d21ba03b96542bf9291ecf6cbd980a851560a3f628dbaa2c41ad3c (veildatahash)
+5ad06a5c (ntime)
+4c80131b (nbits)
+110c6a3c (nonce)
+0000 (fProofOfStake 0 fProofOfFullNode 0)
+0101000000000000 (? obv flags)
+010000000000000000000000000000000000000000000000000000000000000000ffffffff coinbase input
+19 (scriptlen) overall
+03 (scriptlen) sub
+1bff00 (height 00FF1B - 65307)
+04 (scriptlen) sub
+5bd06a5c (ntime 1540385372)
+08 (scriptlen) sub
+81006982ed070000 (extranonce2) (extranonce?)
+62736f642e310000000000010100f2052a010000001976a914ca9ad357a7595045ae240b040f8705017a4fc7cf88ac (coinb2)
+________________________________________________________________________________________________________
+040a00000000000000                                               veildata bin (040a00000000000000)
+d2f2249a82d411f7bb294a93b983c7da4276c9aba18a34be97c50ad46b6e3abf veil_accum10
+6400000000000000                                                 veildata bin (6400000000000000)
+b1f108ecda7e98f0b38ca218c9386c856303b407dfbe5ee93fafd7bac31ac7bb veil_accum100
+e803000000000000                                                 veildata bin (e803000000000000)
+5b3596b769a20024efeb3579573ed77f9189a43154f707813a5b5a184c8301f4 veil_accum1000
+1027000000000000                                                 veildata bin (1027000000000000)
+4901131a8bbd688aefaf30d1474d4e2ac632adcce1ae9d44c4fe7769096bec74 veil_accum10000
+ad8492957419a1277c3faa2b97bd0175a241575ec06590442ca6d6dc69ba6659 merkleroot
+ad8492957419a1277c3faa2b97bd0175a241575ec06590442ca6d6dc69ba6659 merkleroot (segwit but doesnt care)
+________________________________________________________________________________________________________
