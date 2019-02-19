@@ -48,9 +48,9 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		string_be(merklerootbyteswap,merklerootswap);
 
 		sprintf(veildatahash, "%s%s%s%s%s%s%s%s%s%s%s%s",merklerootswap,merklerootswap,"04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn);
-		printf("\nveildatahash: %s\n", veildatahash);
+		// printf("\nveildatahash: %s\n", veildatahash);
                 sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,merklerootbyteswap,merklerootbyteswap);
-                printf("\nveildatablk:  %s\n", veildatablk);
+                // printf("\nveildatablk:  %s\n", veildatablk);
 
                 memset(submitvalues->veilblock,'\0',1024);
                 memcpy(submitvalues->veilblock,veildatablk,strlen(veildatablk));
@@ -72,7 +72,7 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		memset(veilsha_be,0,128);
 		ser_string_be(veilshahashswap,veilsha_be,8);
 
-		printf("\nveilhash: %s\n",veilshahashswap);
+		// printf("\nveilhash: %s\n",veilshahashswap);
 
 		// build blockheader
 		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, veilsha_be, ntime, templ->nbits, nonce);
@@ -90,9 +90,9 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 	hexlify(submitvalues->hash_hex, submitvalues->hash_bin, 32);
 	string_be(submitvalues->hash_hex, submitvalues->hash_be);
 
-	printf("blkhdr  : %s\n", submitvalues->header_be);
-	printf("powhash : %s\n",submitvalues->hash_be);
-	printf("\n");
+//	printf("blkhdr  : %s\n", submitvalues->header_be);
+//	printf("powhash : %s\n",submitvalues->hash_be);
+//	printf("\n");
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -259,7 +259,7 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 		}
 
 		else {
-			printf("block:    %s\n", block_hex); 
+			// printf("block:    %s\n", block_hex); 
 			debuglog("*** REJECTED :( %s block %d %d txs\n", coind->name, templ->height, templ->txcount);
 			// rejectlog("REJECTED %s block %d\n", coind->symbol, templ->height);
 		}

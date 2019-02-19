@@ -46,8 +46,8 @@ static void job_pack_tx(YAAMP_COIND *coind, char *data, json_int_t amount, char 
 	else
 		sprintf(data+strlen(data), "1976a914%s88ac", key? key: coind->script_pubkey);
 
-	debuglog("pack tx %s\n", data+ol);
-	debuglog("pack tx %lld\n", amount);
+	// debuglog("pack tx %s\n", data+ol);
+	// debuglog("pack tx %lld\n", amount);
 }
 
 void coinbase_aux(YAAMP_JOB_TEMPLATE *templ, char *aux_script)
@@ -97,7 +97,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	char script1[4*1024];
 	sprintf(script1, "%s%s%s08", eheight, templ->flags, etime);
 
-	char script2[32] = "7969696d7000"; // "yiimp\0" in hex ascii
+	char script2[32] = "626172727900"; // "barry\0" in hex ascii
 
 //	if(!coind->pos && !coind->isaux && templ->auxs_size)
 //		coinbase_aux(templ, script2);
