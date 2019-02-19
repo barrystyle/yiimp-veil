@@ -115,13 +115,7 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 
 	json_int_t available = templ->value;
 
-//	if (templ->has_segwit_txs) {
-//		strcat(templ->coinb2, "02");
-//		strcat(templ->coinb2, commitment);
-//	} else {
-		strcat(templ->coinb2, "01");
-//	}
-
+        strcat(templ->coinb2, "0101");
 	job_pack_tx(coind, templ->coinb2, available, NULL);
 
 //	if(coind->txmessage)

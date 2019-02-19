@@ -40,16 +40,17 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 	if (!strcmp(g_stratum_algo, "x16rt"))
 	{
 		char merklerootbyteswap[128];
+                memset(merklerootbyteswap,'\0',128);
 		memcpy(merklerootbyteswap,merkleroot.c_str(),64);
 
 		char merklerootswap[128];
-		memset(merklerootswap,0,128);
+		memset(merklerootswap,'\0',128);
 		string_be(merklerootbyteswap,merklerootswap);
 
 		sprintf(veildatahash, "%s%s%s%s%s%s%s%s%s%s%s%s",merklerootswap,merklerootswap,"04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn);
-		printf("veildatahash: %s\n", veildatahash);
-                sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,merklerootswap,merklerootswap);
-                printf("veildatablk:  %s\n", veildatablk);
+		printf("\nveildatahash: %s\n", veildatahash);
+                sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,merklerootbyteswap,merklerootbyteswap);
+                printf("\nveildatablk:  %s\n", veildatablk);
 
                 memset(submitvalues->veilblock,'\0',1024);
                 memcpy(submitvalues->veilblock,veildatablk,strlen(veildatablk));
@@ -58,17 +59,11 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		memset(veildatahash_bin,0,258);
 		binlify((unsigned char*)veildatahash_bin, veildatahash);
 
-		//for (int i=0; i < 257; i++)
-		//   printf("%02hhx",veildatahash_bin[i]);
-		//printf("\n");
-
 		char veilshahash[65];
 		memset(veilshahash,0,65);
 		YAAMP_HASH_FUNCTION veildata_hash = sha256_double_hash_hex;
 		veildata_hash((char *)veildatahash_bin,veilshahash,257);
 
-		//printf("%s\n",veilshahash);
-		
 		char veilshahashswap[128];
 		memset(veilshahashswap,0,128);
 		string_be(veilshahash,veilshahashswap);
@@ -77,7 +72,7 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 		memset(veilsha_be,0,128);
 		ser_string_be(veilshahashswap,veilsha_be,8);
 
-		printf("veilhash: %s\n",veilshahashswap);
+		printf("\nveilhash: %s\n",veilshahashswap);
 
 		// build blockheader
 		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, veilsha_be, ntime, templ->nbits, nonce);
