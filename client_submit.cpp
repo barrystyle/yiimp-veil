@@ -94,7 +94,7 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 	strcat(submitvalues->header_be,"0000");
 	binlify(submitvalues->header_bin, submitvalues->header_be);
 
-//	printf("%s\n", submitvalues->header_be);
+	// printf("\n\n block %s\n\n", submitvalues->header_be);
 	int header_len = strlen(submitvalues->header)/2;
 	g_current_algo->hash_function((char *)submitvalues->header_bin, (char *)submitvalues->hash_bin, header_len);
 
@@ -197,16 +197,15 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 			sprintf(count_hex, "fd%02x%02x", templ->txcount & 0xFF, templ->txcount >> 8);
 
 		memset(block_hex, 0, block_size);
-		sprintf(block_hex, "%s%s%s%s", submitvalues->header_be, count_hex, submitvalues->coinbase, submitvalues->veilblock);  // test
+		sprintf(block_hex, "%s%s%s", submitvalues->header_be, count_hex, submitvalues->coinbase);
 
-		if (g_current_algo->name && !strcmp("jha", g_current_algo->name)) {
-			// block header of 88 bytes
-			sprintf(block_hex, "%s8400000008000000%s%s", submitvalues->header_be, count_hex, submitvalues->coinbase);
-		}
-
+                //append txdata to block
 		vector<string>::const_iterator i;
 		for(i = templ->txdata.begin(); i != templ->txdata.end(); ++i)
 			sprintf(block_hex+strlen(block_hex), "%s", (*i).c_str());
+
+                //append veildatahash
+                sprintf(block_hex+strlen(block_hex), "%s", submitvalues->veilblock);
 
 		// POS coins need a zero byte appended to block, the daemon replaces it with the signature
 		if(coind->pos)
