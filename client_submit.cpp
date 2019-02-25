@@ -49,7 +49,18 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 
 		sprintf(veildatahash, "%s%s%s%s%s%s%s%s%s%s%s%s",merklerootswap,merklerootswap,"04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn);
 		// printf("\nveildatahash: %s\n", veildatahash);
-                sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,merklerootbyteswap,merklerootbyteswap);
+
+                // reverse endians
+                char accum10[65], accum100[65], accum1000[65], accum10000[65];
+                memset(accum10,'\0',65);
+                memset(accum100,'\0',65);
+                memset(accum1000,'\0',65);
+                memset(accum10000,'\0',65);
+                string_be(templ->veil_accum10,accum10);
+                string_be(templ->veil_accum100,accum100);
+                string_be(templ->veil_accum1000,accum1000);
+                string_be(templ->veil_accum10000,accum10000);
+                sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",accum10,"6400000000000000",accum100,"e803000000000000",accum1000,"1027000000000000",accum10000,merklerootbyteswap,merklerootbyteswap);
                 // printf("\nveildatablk:  %s\n", veildatablk);
 
                 memset(submitvalues->veilblock,'\0',1024);
