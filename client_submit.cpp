@@ -19,9 +19,8 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 	char doublehash[128];
 	memset(doublehash, 0, 128);
 
-	char veildatahash[1024];
+	char veildatahash[1024], veildatablk[1024];
 	memset(veildatahash, 0, 1024);
-        char veildatablk[1024];
         memset(veildatablk, 0, 1024);
 
 	YAAMP_HASH_FUNCTION merkle_hash = sha256_double_hash_hex;
@@ -36,74 +35,82 @@ void build_submit_values(YAAMP_JOB_VALUES *submitvalues, YAAMP_JOB_TEMPLATE *tem
 	printf("merkle root %s\n", merkleroot.c_str());
 #endif
 
-	// build veildatahash
-	if (!strcmp(g_stratum_algo, "x16rt"))
-	{
-		char merklerootbyteswap[128];
-                memset(merklerootbyteswap,'\0',128);
-		memcpy(merklerootbyteswap,merkleroot.c_str(),64);
+	// veildata (for veildatahash)
+	char merklerootswap[65];
+	memset(merklerootswap,'\0',65);
+	string_be(merkleroot.c_str(),merklerootswap);
+	sprintf(veildatahash, "%s%s%s%s%s%s%s%s%s%s%s%s",merklerootswap,merklerootswap,"04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn);
 
-		char merklerootswap[128];
-		memset(merklerootswap,'\0',128);
-		string_be(merklerootbyteswap,merklerootswap);
+	// veildata (for block submission)
+	char accum10[65], accum100[65], accum1000[65], accum10000[65];
+	memset(accum10,'\0',65);
+	memset(accum100,'\0',65);
+	memset(accum1000,'\0',65);
+	memset(accum10000,'\0',65);
+	string_be(templ->veil_accum10,accum10);
+	string_be(templ->veil_accum100,accum100);
+	string_be(templ->veil_accum1000,accum1000);
+	string_be(templ->veil_accum10000,accum10000);
+	sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",accum10,"6400000000000000",accum100,"e803000000000000",accum1000,"1027000000000000",accum10000,merkleroot.c_str(),merkleroot.c_str());
+	memset(submitvalues->veilblock,'\0',1024);
+	memcpy(submitvalues->veilblock,veildatablk,strlen(veildatablk));
 
-		sprintf(veildatahash, "%s%s%s%s%s%s%s%s%s%s%s%s",merklerootswap,merklerootswap,"04","0a00000000000000",templ->veil_accum10,"6400000000000000",templ->veil_accum100,"e803000000000000",templ->veil_accum1000,"1027000000000000",templ->veil_accum10000,templ->veil_pofn);
-		// printf("\nveildatahash: %s\n", veildatahash);
+        // str->bin
+	char veildatahash_bin[258];
+	memset(veildatahash_bin,0,258);
+	binlify((unsigned char*)veildatahash_bin, veildatahash);
 
-                // reverse endians
-                char accum10[65], accum100[65], accum1000[65], accum10000[65];
-                memset(accum10,'\0',65);
-                memset(accum100,'\0',65);
-                memset(accum1000,'\0',65);
-                memset(accum10000,'\0',65);
-                string_be(templ->veil_accum10,accum10);
-                string_be(templ->veil_accum100,accum100);
-                string_be(templ->veil_accum1000,accum1000);
-                string_be(templ->veil_accum10000,accum10000);
-                sprintf(veildatablk, "%s%s%s%s%s%s%s%s%s%s%s","04","0a00000000000000",accum10,"6400000000000000",accum100,"e803000000000000",accum1000,"1027000000000000",accum10000,merklerootbyteswap,merklerootbyteswap);
-                // printf("\nveildatablk:  %s\n", veildatablk);
+        // bin->sha256d
+	char veilshahash[65];
+	memset(veilshahash,0,65);
+	YAAMP_HASH_FUNCTION veildata_hash = sha256_double_hash_hex;
+	veildata_hash((char *)veildatahash_bin,veilshahash,257);
 
-                memset(submitvalues->veilblock,'\0',1024);
-                memcpy(submitvalues->veilblock,veildatablk,strlen(veildatablk));
+        // sha256d->endian
+	char veilshahashswap[128];
+	memset(veilshahashswap,0,128);
+	string_be(veilshahash,veilshahashswap);
 
-		char veildatahash_bin[258];
-		memset(veildatahash_bin,0,258);
-		binlify((unsigned char*)veildatahash_bin, veildatahash);
+        // endian->bitswap
+	char veilsha_be[128];
+	memset(veilsha_be,0,128);
+	ser_string_be(veilshahashswap,veilsha_be,8);
 
-		char veilshahash[65];
-		memset(veilshahash,0,65);
-		YAAMP_HASH_FUNCTION veildata_hash = sha256_double_hash_hex;
-		veildata_hash((char *)veildatahash_bin,veilshahash,257);
-
-		char veilshahashswap[128];
-		memset(veilshahashswap,0,128);
-		string_be(veilshahash,veilshahashswap);
-
-		char veilsha_be[128];
-		memset(veilsha_be,0,128);
-		ser_string_be(veilshahashswap,veilsha_be,8);
-
-		// printf("\nveilhash: %s\n",veilshahashswap);
-
-		// build blockheader
-		sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, veilsha_be, ntime, templ->nbits, nonce);
-		ser_string_be(submitvalues->header, submitvalues->header_be, 112/4);
-	}
+	// build blockheader
+	sprintf(submitvalues->header, "%s%s%s%s%s%s", templ->version, templ->prevhash_be, veilsha_be, ntime, templ->nbits, nonce);
+	ser_string_be(submitvalues->header, submitvalues->header_be, 112/4);
 
 	// fProofOfStake & fProofOfFullNode
 	strcat(submitvalues->header_be,"0000");
 	binlify(submitvalues->header_bin, submitvalues->header_be);
 
-	// printf("\n\n block %s\n\n", submitvalues->header_be);
 	int header_len = strlen(submitvalues->header)/2;
 	g_current_algo->hash_function((char *)submitvalues->header_bin, (char *)submitvalues->hash_bin, header_len);
-
 	hexlify(submitvalues->hash_hex, submitvalues->hash_bin, 32);
 	string_be(submitvalues->hash_hex, submitvalues->hash_be);
+}
 
-//	printf("blkhdr  : %s\n", submitvalues->header_be);
-//	printf("powhash : %s\n",submitvalues->hash_be);
-//	printf("\n");
+/////////////////////////////////////////////////////////////////////////////////
+
+void dump_reject(char *reject_block)
+{
+        char buffer[65535];
+        memset(buffer,'\0',65535);
+
+        if(strlen(reject_block)>65534)
+           return;
+        else
+           memcpy(buffer,reject_block,strlen(reject_block));
+
+        FILE *file_ptr=fopen("reject_blocks.log","a");
+        if(file_ptr==NULL)
+           return;
+
+        fputs(buffer,file_ptr);
+        fputs("\n\n",file_ptr);
+        fclose(file_ptr);
+
+        return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -271,6 +278,7 @@ static void client_do_submit(YAAMP_CLIENT *client, YAAMP_JOB *job, YAAMP_JOB_VAL
 		else {
 			// printf("block:    %s\n", block_hex); 
 			debuglog("*** REJECTED :( %s block %d %d txs\n", coind->name, templ->height, templ->txcount);
+                        dump_reject(block_hex);
 			// rejectlog("REJECTED %s block %d\n", coind->symbol, templ->height);
 		}
 	}

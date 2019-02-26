@@ -139,9 +139,9 @@ void share_write(YAAMP_DB *db)
 			worker->valid, worker->extranonce1, worker->difficulty, worker->share_diff, now, g_stratum_algo, worker->error_number);
 
 		// todo: link max_ttf ?
-		if((now - worker->ntime) > 15*60 || worker->ntime > now) {
-			debuglog("ntime warning: value %d (%08x) offset %d secs from uid %d\n", worker->ntime, worker->ntime, (now - worker->ntime), worker->userid);
-		}
+//		if((now - worker->ntime) > 15*60 || worker->ntime > now) {
+//			debuglog("ntime warning: value %d (%08x) offset %d secs from uid %d\n", worker->ntime, worker->ntime, (now - worker->ntime), worker->userid);
+//		}
 
 		if(++count >= 1000)
 		{

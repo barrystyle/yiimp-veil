@@ -127,9 +127,9 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 	coind->reward = (double)available/100000000*coind->reward_mul;
 //	debuglog("coinbase %f\n", coind->reward);
 
-	debuglog("coinbase %s: version %s, nbits %s, time %s\n", coind->symbol, templ->version, templ->nbits, templ->ntime);
-        debuglog("coinb1 %s\n", templ->coinb1);
-	debuglog("coinb2 %s\n", templ->coinb2);
+//	debuglog("coinbase %s: version %s, nbits %s, time %s\n", coind->symbol, templ->version, templ->nbits, templ->ntime);
+//      debuglog("coinb1 %s\n", templ->coinb1);
+//	debuglog("coinb2 %s\n", templ->coinb2);
 }
 
 

@@ -34,7 +34,7 @@ static void job_mining_notify_buffer(YAAMP_JOB *job, char *buffer)
                         "\"%x\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",[%s],\"%s\",\"%s\",\"%s\",true]}\n",
                         job->id, templ->prevhash_be, templ->veil_accum10, templ->veil_accum100, templ->veil_accum1000, templ->veil_accum10000, templ->veil_pofn,
                         templ->coinb1, templ->coinb2, templ->txmerkles, templ->version, templ->nbits, templ->ntime);
-                printf("%s\n",buffer);
+                // printf("%s\n",buffer);
                 return;
         }
 
