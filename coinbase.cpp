@@ -88,49 +88,35 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 
 	ser_number(templ->height, eheight);
 	ser_number(bswap32((int)time(NULL)), etime);
-//	if(coind->pos) ser_string_be(templ->ntime, entime, 1);
+
+        // this is dim, but time will literally 'disappear' from coinb2 w/o it (!)
+        char timefield[10], timeflip[10];
+        memset(timefield,'\0',10);
+        memset(timeflip,'\0',10);
+        sprintf(timefield,"%08x",bswap32((int)time(NULL)));
+        memcpy(timeflip,timefield+6,2);
+        memcpy(timeflip+2,timefield+4,2);
+        memcpy(timeflip+4,timefield+2,2);
+        memcpy(timeflip+6,timefield,2);
 
 	char eversion1[32] = "01000000000000";
-//	if(coind->txmessage)
-//		strcpy(eversion1, "02000000");
-
 	char script1[4*1024];
 	sprintf(script1, "%s%s%s08", eheight, templ->flags, etime);
-
 	char script2[32] = "626172727900"; // "barry\0" in hex ascii
-
-//	if(!coind->pos && !coind->isaux && templ->auxs_size)
-//		coinbase_aux(templ, script2);
-
-	int script_len = strlen(script1)/2 + strlen(script2)/2 + 8;
+	int script_len = 24;
 	sprintf(templ->coinb1, "%s%s01"
 		"0000000000000000000000000000000000000000000000000000000000000000"
 		"ffffffff%02x%s", eversion1, entime, script_len, script1);
-
 	sprintf(templ->coinb2, "%s00000000", script2);
 
-	// segwit commitment, if needed
-//	if (templ->has_segwit_txs)
-//		sprintf(commitment, "0000000000000000%02x%s", (int) (strlen(coind->commitment)/2), coind->commitment);
-
-	json_int_t available = templ->value;
-
+        json_int_t available = templ->value;
         strcat(templ->coinb2, "0101");
 	job_pack_tx(coind, templ->coinb2, available, NULL);
-
-//	if(coind->txmessage)
-//		strcat(templ->coinb2, "00");
-
-        // veil appears to truncate this
-	// strcat(templ->coinb2, "00000000"); 
-
+        sprintf(templ->coinb1+98,"04%s08",timeflip);
 	coind->reward = (double)available/100000000*coind->reward_mul;
-//	debuglog("coinbase %f\n", coind->reward);
 
+//	debuglog("coinbase %f\n", coind->reward);
 //	debuglog("coinbase %s: version %s, nbits %s, time %s\n", coind->symbol, templ->version, templ->nbits, templ->ntime);
 //      debuglog("coinb1 %s\n", templ->coinb1);
 //	debuglog("coinb2 %s\n", templ->coinb2);
 }
-
-
-

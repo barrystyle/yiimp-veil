@@ -96,11 +96,6 @@ YAAMP_JOB_TEMPLATE *coind_create_template_memorypool(YAAMP_COIND *coind)
 
 YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 {
-	debuglog("stratum gbt refresh\n");
-
-	if(coind->usememorypool)
-		return coind_create_template_memorypool(coind);
-
 	char params[512] = "[{}]";
 	if(!strcmp(coind->symbol, "PPC")) strcpy(params, "[]");
 	else if(g_stratum_segwit) strcpy(params, "[{\"rules\":[\"segwit\"]}]");
@@ -177,21 +172,14 @@ YAAMP_JOB_TEMPLATE *coind_create_template(YAAMP_COIND *coind)
 	strcpy(templ->flags, flags ? flags : "");
 
         ///////////////////////////////////////////////////////////////////////////veil////
-
         strcpy(templ->veil_pofn,json_get_string(json_result, "proofoffullnodehash"));
-        if (templ->veil_pofn)
-        {
-        	json_value *json_accumhashes = json_get_array(json_result, "accumulatorhashes");
-                if(json_accumhashes)
-                {
-                	strcpy(templ->veil_accum10,json_get_string(json_accumhashes,"10"));
-                        strcpy(templ->veil_accum100,json_get_string(json_accumhashes,"100"));
-                        strcpy(templ->veil_accum1000,json_get_string(json_accumhashes,"1000"));
-                        strcpy(templ->veil_accum10000,json_get_string(json_accumhashes,"10000"));
-                }
-
+       	json_value *json_accumhashes = json_get_array(json_result, "accumulatorhashes");
+        if(json_accumhashes) {
+              	strcpy(templ->veil_accum10,json_get_string(json_accumhashes,"10"));
+                strcpy(templ->veil_accum100,json_get_string(json_accumhashes,"100"));
+                strcpy(templ->veil_accum1000,json_get_string(json_accumhashes,"1000"));
+                strcpy(templ->veil_accum10000,json_get_string(json_accumhashes,"10000"));
         }
-
         ////veil//////////////////////////////////////////////////////////////////////////
 
 	if (!templ->height || !templ->nbits || !strlen(templ->prevhash_hex)) {
