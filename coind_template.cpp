@@ -357,7 +357,7 @@ bool coind_create_job(YAAMP_COIND *coind, bool force)
 
 	YAAMP_JOB *job_last = coind->job;
 
-	if(	!force && job_last && job_last->templ && job_last->templ->created + 45 > time(NULL) &&
+	if(	!force && job_last && job_last->templ && job_last->templ->created + 25 > time(NULL) &&
 		templ->height == job_last->templ->height &&
 		templ->txcount == job_last->templ->txcount &&
 		strcmp(templ->coinb2, job_last->templ->coinb2) == 0)
